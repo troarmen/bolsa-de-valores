@@ -1,53 +1,66 @@
-import estruturasdedados.DynamicArray;
+import java.util.List;
 
 public class Investidor {
-
-    private int codigo;
     private String nome;
-    private double saldo;
-    private DynamicArray<Acao> carteira;
+    private String cpf;
+    private List<Corretora> corretoras;
+    private Carteira carteira;
+    private List<Bolsa> bolsas;
+    private List<Custodiante> custodiantes;
+    private List<OrdemCompra> ordens_compras;
+    private List<OrdemVenda> ordens_vendas;
 
-    public Investidor(int codigo, String nome, double saldo) {
-        inicializarInvestidor(codigo, nome, saldo);
-    }
-
-    public Investidor(int codigo, String nome) {
-        inicializarInvestidor(codigo, nome, 0.0);
-    }
-
-    private void inicializarInvestidor(int codigo, String nome, double saldoInicial) {
-        this.codigo = codigo;
+    public Investidor(String nome, String cpf, Carteira carteira) {
         this.nome = nome;
-        this.saldo = saldoInicial;
-        this.carteira = new DynamicArray<>();
+        this.cpf = cpf;
+        this.carteira = carteira;
     }
 
-    public void comprarAcao(Acao acao) {
-        double valorAcao = acao.calcularValor();
-        if (valorAcao > saldo) {
-            throw new RuntimeException("Saldo insuficiente para a compra desta ação");
-        }
-        carteira.add(acao);
-        saldo -= valorAcao;
+    public void addCorretora(Corretora corretora) {
+        corretoras.add(corretora);
     }
 
-    public double calcularTotal() {
-        double valorTotal = 0.0;
-        for (Acao acao : carteira) {
-            valorTotal += acao.calcularValor();
-        }
-        return valorTotal;
+    public void addCustodiante(Custodiante custodiante) {
+        custodiantes.add(custodiante);
     }
 
-    public double getSaldo() {
-        return saldo;
+    public void comprarAtivo(Ativo ativo, Corretora corretora, Custodiante custodiante){
+        corretoras.add(corretora);
+        carteira.adicionarAtivo(ativo);
+        addCustodiante(custodiante);
+        addCorretora(corretora);
+        custodiante.adicionarAtivo(ativo); 
+        custodiante.addCliente(this);
+    }
+
+    public void enviarOrdemDeCompra(OrdemCompra ordem, Corretora corretora, Bolsa bolsa) {
+        ordens_compras.add(ordem);
+        bolsas.add(bolsa);
+        bolsa.addOrdensCompraa(ordem);
+        corretora.enviarOrdemCompra(ordem, bolsa);
+    }
+
+    public void enviarOrdemDeVenda(OrdemVenda ordem, Corretora corretora, Bolsa bolsa) {
+        ordens_vendas.add(ordem);
+        bolsas.add(bolsa);
+        bolsa.addOrdensVenda(ordem);
+        corretora.enviarOrdemVenda(ordem, bolsa);
     }
 
     public String getNome() {
         return nome;
     }
 
-    public int getCodigo() {
-        return codigo;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void addBolsa(Bolsa bolsa){
+        bolsas.add(bolsa);
+    }
+
 }
