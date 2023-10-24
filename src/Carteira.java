@@ -1,3 +1,5 @@
+package ProjetoLG;
+
 import java.util.List;
 
 public class Carteira {
